@@ -52,4 +52,3 @@ class ComplaintAdmin(admin.ModelAdmin):
     list_display = ('user', 'flat', 'text')
     search_fields = ('user__username', 'flat__address')
     raw_id_fields = ('user', 'flat')
-
