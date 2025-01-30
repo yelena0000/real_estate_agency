@@ -4,6 +4,30 @@ from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class Owner(models.Model):
+    full_name = models.CharField('ФИО владельца', max_length=200)
+    phone_number = models.CharField('Номер владельца', max_length=20)
+    normalized_phone = PhoneNumberField(
+        'Нормализованный номер владельца',
+        blank=True,
+        null=True,
+        region='RU',
+    )
+    flats = models.ManyToManyField(
+        "Flat",
+        related_name="owned_by",
+        verbose_name="Квартиры в собственности"
+    )
+
+    def owned_flats(self):
+        return ", ".join(flat.address for flat in self.flats.all())
+
+    owned_flats.short_description = "Квартиры в собственности"
+
+    def __str__(self):
+        return self.full_name
+
+
 class Flat(models.Model):
     owner = models.CharField('ФИО владельца', max_length=200)
     owners_phonenumber = models.CharField('Номер владельца', max_length=20)
@@ -12,6 +36,12 @@ class Flat(models.Model):
         blank=True,
         null=True,
         region='RU'
+    )
+    owners = models.ManyToManyField(
+        Owner,
+        related_name='flats_owned',
+        verbose_name='Собственники квартиры',
+        blank=True
     )
     created_at = models.DateTimeField(
         'Когда создано объявление',
