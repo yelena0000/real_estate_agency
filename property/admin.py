@@ -5,40 +5,43 @@ from .models import Flat, Complaint
 
 @admin.register(Flat)
 class FlatAdmin(admin.ModelAdmin):
-    search_fields = [
+    search_fields = (
         'town',
         'address',
         'owner'
-    ]
-    readonly_fields = [
-        'created_at'
-    ]
-    list_display = [
+    )
+    readonly_fields = (
+        'created_at',
+    )
+    list_display = (
         'address',
         'price',
         'new_building',
         'construction_year',
         'town'
-    ]
-    list_editable = [
+    )
+    list_editable = (
         'new_building',
-    ]
-    list_filter = [
+    )
+    list_filter = (
         'new_building',
         'active',
         'has_balcony',
         'rooms_number',
         'town',
-    ]
+    )
+    raw_id_fields = (
+        'liked_by',
+    )
 
 @admin.register(Complaint)
 class ComplaintAdmin(admin.ModelAdmin):
-    list_display = [
+    list_display = (
         'user',
         'flat',
         'text'
-    ]
-    raw_id_fields = [
+    )
+    raw_id_fields = (
         'user',
         'flat'
-    ]
+    )
