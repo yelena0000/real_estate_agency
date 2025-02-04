@@ -1,11 +1,16 @@
 from django.contrib import admin
-from .models import Flat, Complaint, Owner
+from .models import (
+    Complaint,
+    Flat,
+    Owner,
+    Ownership
+)
 
 
-class OwnerInline(admin.TabularInline):
-    model = Flat.owners.through
+class OwnershipInline(admin.TabularInline):
+    model = Ownership
     extra = 2
-    raw_id_fields = ('owner',)
+    raw_id_fields = ('owner', 'flat')
 
 
 @admin.register(Owner)
@@ -20,12 +25,10 @@ class OwnerAdmin(admin.ModelAdmin):
         'full_name',
         'phone_number'
     )
-    raw_id_fields = (
-        'flats',
-    )
+    inlines = [OwnershipInline]
 
     def display_owned_flats(self, obj):
-        return obj.owned_flats()
+        return ", ".join(flat.address for flat in obj.ownerships.all())
 
     display_owned_flats.short_description = "Квартиры в собственности"
 
@@ -35,7 +38,7 @@ class FlatAdmin(admin.ModelAdmin):
     search_fields = (
         'town',
         'address',
-        'owners__full_name',
+        'ownerships__owner__full_name',
     )
     readonly_fields = (
         'created_at',
@@ -59,9 +62,8 @@ class FlatAdmin(admin.ModelAdmin):
     )
     raw_id_fields = (
         'liked_by',
-        'owners'
     )
-    inlines = [OwnerInline]
+    inlines = [OwnershipInline]
 
 
 @admin.register(Complaint)
